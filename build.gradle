@@ -1,0 +1,32 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.3.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.2-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile 'org.jsoup:jsoup:1.10.2'
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.4'
+	compile group: 'org.json', name: 'json', version: '20090211'
+	compile group: 'net.sourceforge.javacsv', name: 'javacsv', version: '2.0'
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
