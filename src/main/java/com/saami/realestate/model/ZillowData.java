@@ -6,6 +6,7 @@ package com.saami.realestate.model;
 public class ZillowData  {
 
     private Address address;
+    private String zpid;
     private double rentZestimate;
     private double zestimate;
 
@@ -15,6 +16,15 @@ public class ZillowData  {
 
     public ZillowData setAddress(Address address) {
         this.address = address;
+        return this;
+    }
+
+    public String getZpid() {
+        return zpid;
+    }
+
+    public ZillowData setZpid(String zpid) {
+        this.zpid = zpid;
         return this;
     }
 

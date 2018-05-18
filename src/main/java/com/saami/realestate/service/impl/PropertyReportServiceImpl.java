@@ -36,24 +36,25 @@ public class PropertyReportServiceImpl implements PropertyReportService {
 
     @Override
     public String generateReport() {
-        Long startTime = System.currentTimeMillis();
-
-        List<Listing> mlsListings = mlsDataService.getMLSData();
-
-        for (Listing listing : mlsListings) {
-            Address address = listing.getAddress();
-            ZillowData zillowData = zillowService.getZillowSearchData(address.getAddress(),address.getCity(), address.getState());
-
-            if (zillowData == null) {
-                LOG.info(String.format("Zillow data not found for address:%s, %s, %s", address.getAddress(), address.getCity(), address.getAddress()));
-                continue;
-            }
-
-            address.setZip(zillowData.getAddress().getZip());
-            listing.setZillowData(zillowData);
-        }
-
-        return generateCsvReport(mlsListings);
+//        Long startTime = System.currentTimeMillis();
+//
+//        List<Listing> mlsListings = mlsDataService.getMLSData();
+//
+//        for (Listing listing : mlsListings) {
+//            Address address = listing.getAddress();
+//            ZillowData zillowData = zillowService.getZillowSearchData(address.getStreet(),address.getCity(), address.getState());
+//
+//            if (zillowData == null) {
+//                LOG.info(String.format("Zillow data not found for address:%s, %s, %s", address.getStreet(), address.getCity(), address.getStreet()));
+//                continue;
+//            }
+//
+//            address.setZip(zillowData.getAddress().getZip());
+//            listing.setZillowData(zillowData);
+//        }
+//
+//        return generateCsvReport(mlsListings);
+        return "disabled";
 
 
     }
@@ -66,7 +67,7 @@ public class PropertyReportServiceImpl implements PropertyReportService {
             csvWriter.writeRecord(HEADERS);
 
             for (Listing listing : listings) {
-                csvWriter.write(listing.getAddress().getAddress());
+                csvWriter.write(listing.getAddress().getStreet());
                 csvWriter.write(listing.getAddress().getCity());
                 csvWriter.write(listing.getAddress().getZip().toString());
                 csvWriter.write(formatPrice(listing.getPrice()));

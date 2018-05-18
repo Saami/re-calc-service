@@ -1,13 +1,12 @@
 package com.saami.realestate.service.impl;
 
-import com.saami.realestate.model.Address;
-import com.saami.realestate.model.ZillowData;
+import com.saami.realestate.model.zillow.ZestimateResonse;
+import com.saami.realestate.model.zillow.ZillowSearchResponse;
 import com.saami.realestate.service.api.ZillowService;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONObject;
 import org.json.XML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +46,14 @@ public class ZillowServiceImpl implements ZillowService {
     String zestimateUrl;
 
     @Override
-    public ZillowData getZillowSearchData(String address, String city, String state) {
-        if (StringUtils.isEmpty(address) || StringUtils.isEmpty(city) || StringUtils.isEmpty(state)) {
-            throw new IllegalArgumentException("Address, City and State are required for Zillow getZillowSearchData api");
+    public ZillowSearchResponse getZillowSearchData(String street, String city, String state) {
+        if (StringUtils.isEmpty(street) || StringUtils.isEmpty(city) || StringUtils.isEmpty(state)) {
+            throw new IllegalArgumentException("Street, City and State are required for Zillow getZillowSearchData api");
         }
 
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put(ID_PARAM, id);
-        paramMap.put(ADDRESS_PARAM, encodeString(address));
+        paramMap.put(ADDRESS_PARAM, encodeString(street));
         paramMap.put(CITY_PARAM, encodeString(city + ", " + state));
         paramMap.put(RENT_PARAM, "true");
         final String urlWithParams = appendParams(searchUrl, paramMap);
@@ -90,7 +89,7 @@ public class ZillowServiceImpl implements ZillowService {
 
             rd.close();
 
-            return getZillowDataFromSearch(new JSONObject(XML.toJSONObject(result.toString()).toString()));
+            return new ZillowSearchResponse(XML.toJSONObject(result.toString()));
 
         } catch (Exception e) {
             LOG.error("Error getting from Zillow search results: " + urlWithParams, e);
@@ -103,7 +102,7 @@ public class ZillowServiceImpl implements ZillowService {
     }
 
     @Override
-    public ZillowData getZestimateData(String zpId) {
+    public ZestimateResonse getZestimateData(String zpId) {
         if (StringUtils.isEmpty(zpId)) {
             throw new IllegalArgumentException("zpId is required for Zillow getZestimate api");
         }
@@ -145,7 +144,7 @@ public class ZillowServiceImpl implements ZillowService {
 
             rd.close();
 
-            return getZillowDataFromZestimate(new JSONObject(XML.toJSONObject(result.toString()).toString()));
+            return new ZestimateResonse(XML.toJSONObject(result.toString()));
 
         } catch (Exception e) {
             LOG.error("Error getting from Zillow zestimat api: " + urlWithParams, e);
@@ -186,87 +185,6 @@ public class ZillowServiceImpl implements ZillowService {
             LOG.error("error encoding pram: " + param, e);
             return null;
         }
-    }
-
-    private ZillowData getZillowDataFromSearch(JSONObject responseJson) {
-        if (responseJson == null) {
-            return null;
-        }
-
-        ZillowData zillowData = new ZillowData();
-
-        JSONObject searchResults = responseJson.optJSONObject("SearchResults:searchresults");
-        if (searchResults != null) {
-            JSONObject response = searchResults.optJSONObject("response");
-            if (response != null) {
-                JSONObject results = response.optJSONObject("results");
-                if (results != null) {
-                    JSONObject resultJson = results.optJSONObject("result");
-                    zillowData.setAddress(getAddress(resultJson));
-                    zillowData.setRentZestimate(getRentZestimate(resultJson));
-                    zillowData.setZestimate(getZestimate(resultJson));
-                }
-                return zillowData;
-            }
-        }
-        return zillowData;
-    }
-
-    private ZillowData getZillowDataFromZestimate(JSONObject responseJson) {
-        if (responseJson == null) {
-            return null;
-        }
-
-        ZillowData zillowData = new ZillowData();
-
-        JSONObject searchResults = responseJson.optJSONObject("Zestimate:zestimate");
-        if (searchResults != null) {
-            JSONObject response = searchResults.optJSONObject("response");
-            if (response != null) {
-                    zillowData.setAddress(getAddress(response));
-                    zillowData.setRentZestimate(getRentZestimate(response));
-                    zillowData.setZestimate(getZestimate(response));
-                }
-            }
-        return zillowData;
-    }
-
-    private Address getAddress(JSONObject json) {
-        if (json != null) {
-            JSONObject addressJson = json.optJSONObject("address");
-            if (addressJson != null) {
-                return new Address()
-                        .setAddress(addressJson.optString("street"))
-                        .setCity(addressJson.optString("city"))
-                        .setState(addressJson.optString("state"))
-                        .setZip(addressJson.optLong("zipcode"));
-            }
-        }
-        return null;
-    }
-
-    private Double getRentZestimate(JSONObject json) {
-        if (json != null) {
-            JSONObject rentZestimate = json.optJSONObject("rentzestimate");
-            if (rentZestimate != null) {
-                JSONObject amountJson = rentZestimate.optJSONObject("amount");
-                if (amountJson != null) {
-                    return amountJson.optDouble("content");
-                }
-            }
-        }
-        return 0d;
-    }
-
-    private Double getZestimate(JSONObject json) {
-        JSONObject zestimate = json.optJSONObject("zestimate");
-        if (zestimate != null) {
-            JSONObject amountJson = zestimate.optJSONObject("amount");
-            if (amountJson != null) {
-                return amountJson.optDouble("content");
-            }
-        }
-        return 0d;
     }
 
 }

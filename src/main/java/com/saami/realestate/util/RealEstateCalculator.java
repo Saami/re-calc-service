@@ -5,11 +5,11 @@ package com.saami.realestate.util;
  */
 public class RealEstateCalculator {
 
-    private static final double INTEREST_RATE = 5.00d;
+    private static final double INTEREST_RATE = 5.3d;
     private static final int TERM_IN_YEARS = 30;
     private static final double DOWN_PAYMENT_PERCENT = 20;
     private static final double MANAGEMENT_FEE_PERCENT = 8;
-    private static final double WEAR_TEAR_FACTOR = 20;
+    private static final double WEAR_TEAR_FACTOR = 15;
 
     public static double calculateMonthlyPayment(double loanAmount) {
 

@@ -56,7 +56,7 @@ public class CharlotteMLSServiceImpl implements MLSDataService{
                     Address address = new Address()
                             .setCity(city)
                             .setState(STATE)
-                            .setAddress(houseAddress);
+                            .setStreet(houseAddress);
 
                     Listing listing = new Listing()
                             .setDate(date)

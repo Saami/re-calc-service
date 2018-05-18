@@ -4,17 +4,19 @@ package com.saami.realestate.model;
  * Created by sasiddi on 5/3/17.
  */
 public class Address {
-    private String address;
+    private String street;
     private String city;
     private String state;
     private Long zip;    //fetched from zillow
+    private double latitude;
+    private double longitude;
 
-    public String getAddress() {
-        return address;
+    public String getStreet() {
+        return street;
     }
 
-    public Address setAddress(String address) {
-        this.address = address;
+    public Address setStreet(String street) {
+        this.street = street;
         return this;
     }
 
@@ -40,18 +42,26 @@ public class Address {
         return zip;
     }
 
-    @Override
-    public String toString() {
-        return "Address{" +
-                "address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", zip=" + zip +
-                '}';
-    }
-
     public Address setZip(Long zip) {
         this.zip = zip;
+        return this;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public Address setLatitude(double latitude) {
+        this.latitude = latitude;
+        return this;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public Address setLongitude(double longitude) {
+        this.longitude = longitude;
         return this;
     }
 }
