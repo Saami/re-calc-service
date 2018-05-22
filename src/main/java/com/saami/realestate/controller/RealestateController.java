@@ -63,6 +63,8 @@ public class RealestateController {
             property = propertyService.getPropertyByAddress(address, city, state);
             return getPropertyData(property, property.getEstimatedPrice(), property.getEstimatedRent()).toString();
 
+            //address https://www.zillow.com/homes/1420-Rollingwood-Drive_Charlotte_NC_rb/
+
         } catch(Exception e) {
             LOG.error(String.format("failed to get search result for address: %s. Reason: %s", addressParam, e.toString()));
             return ("Failed to retrieve results");
@@ -87,6 +89,8 @@ public class RealestateController {
             result.put("address", property.getAddress().getStreet());
             result.put("city", property.getAddress().getCity());
             result.put("state", property.getAddress().getState());
+            result.put("lat", property.getAddress().getLatitude());
+            result.put("long", property.getAddress().getLongitude());
             result.put("zip", property.getAddress().getZip());
             result.put("zestimate", formatPrice(price));
             result.put("rent", formatPrice(rent));
