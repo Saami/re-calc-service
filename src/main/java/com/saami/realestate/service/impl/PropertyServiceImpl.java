@@ -1,6 +1,7 @@
 package com.saami.realestate.service.impl;
 
 import com.saami.realestate.model.Property;
+import com.saami.realestate.model.zillow.UpdatedDetailsResponse;
 import com.saami.realestate.model.zillow.ZestimateResonse;
 import com.saami.realestate.model.zillow.ZillowSearchResponse;
 import com.saami.realestate.service.api.PropertyService;
@@ -31,6 +32,10 @@ public class PropertyServiceImpl implements PropertyService {
                 .setEstimatedPrice(zillowSearchResponse.getZestimate())
                 .setEstimatedRent(zillowSearchResponse.getRentEstimate());
 
+        //try to get list price if available
+        UpdatedDetailsResponse detailsResponse = getPropertyDetails(zillowSearchResponse.getZpid());
+        property.setListPrice(detailsResponse.getListPrice());
+
         return property;
     }
 
@@ -47,6 +52,18 @@ public class PropertyServiceImpl implements PropertyService {
                 .setEstimatedPrice(zestimateResonse.getZestimate())
                 .setEstimatedRent(zestimateResonse.getRentEstimate());
 
+        //try to get list price if available
+        UpdatedDetailsResponse detailsResponse = getPropertyDetails(zpid);
+        property.setListPrice(detailsResponse.getListPrice());
+
         return property;
+    }
+
+    private UpdatedDetailsResponse getPropertyDetails(String zpid) {
+        if (StringUtils.isEmpty(zpid)) {
+            throw new IllegalArgumentException("zipd is required to getPropertyDetails");
+        }
+
+        return zillowService.getUpdatedDetails(zpid);
     }
 }

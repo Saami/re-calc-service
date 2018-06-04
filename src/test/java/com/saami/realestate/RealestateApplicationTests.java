@@ -57,13 +57,13 @@ public class RealestateApplicationTests {
 
 	@Test
 	public void testMortgageCalculator() {
-		double amount = RealEstateCalculator.calculateMonthlyPayment(90000);
+		double amount = RealEstateCalculator.calculateMonthlyPayment(90000, 20);
 		String saami = "saami";
 	}
 
 	@Test
 	public void testTaxCalculator() {
-		double amount = RealEstateCalculator.calculateAnnualTax(City.CHARLOTTE.getTaxRate(),250000d);
+		double amount = RealEstateCalculator.calculateMontylyTax(City.CHARLOTTE.getTaxRate(),250000d);
 		String saami = "saami";
 	}
 

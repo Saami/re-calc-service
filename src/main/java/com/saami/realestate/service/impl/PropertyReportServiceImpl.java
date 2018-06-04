@@ -1,14 +1,10 @@
 package com.saami.realestate.service.impl;
 
 import com.csvreader.CsvWriter;
-import com.saami.realestate.enums.City;
-import com.saami.realestate.model.Address;
 import com.saami.realestate.model.Listing;
-import com.saami.realestate.model.ZillowData;
 import com.saami.realestate.service.api.MLSDataService;
 import com.saami.realestate.service.api.PropertyReportService;
 import com.saami.realestate.service.api.ZillowService;
-import com.saami.realestate.util.RealEstateCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,32 +62,32 @@ public class PropertyReportServiceImpl implements PropertyReportService {
             final CsvWriter csvWriter = new CsvWriter(stringWriter, ',');
             csvWriter.writeRecord(HEADERS);
 
-            for (Listing listing : listings) {
-                csvWriter.write(listing.getAddress().getStreet());
-                csvWriter.write(listing.getAddress().getCity());
-                csvWriter.write(listing.getAddress().getZip().toString());
-                csvWriter.write(formatPrice(listing.getPrice()));
-                csvWriter.write(formatPrice(RealEstateCalculator.calculateDownPayment(listing.getPrice())));
-                double rent = listing.getZillowData().getRentZestimate();
-                csvWriter.write(formatPrice(rent));
-
-                //
-
-                double management = RealEstateCalculator.calculateMonthlyManagementFees(listing.getZillowData().getRentZestimate());
-                double tax = RealEstateCalculator.calculateAnnualTax(City.valueOf(listing.getAddress().getCity().toUpperCase()).getTaxRate(), listing.getPrice()) / 12;
-                double insurance = City.valueOf(listing.getAddress().getCity().toUpperCase()).getHomeInsurance()  /12;
-                double mortgage = RealEstateCalculator.calculateMonthlyPayment(listing.getPrice() - RealEstateCalculator.calculateDownPayment(listing.getPrice()));
-                double wearTear = RealEstateCalculator.calculateMonthlWearTear(rent);
-                double expense  = management+ tax + insurance + mortgage + wearTear;
-                double cashFlow = rent - expense;
-
-                csvWriter.write(formatPrice(mortgage + tax + insurance));
-                csvWriter.write(formatPrice(management));
-                csvWriter.write(formatPrice(cashFlow));
-                csvWriter.write(String.valueOf((cashFlow * 12d) / (RealEstateCalculator.calculateDownPayment(listing.getPrice()) + 2500d)));
-                csvWriter.endRecord();
-
-            }
+//            for (Listing listing : listings) {
+//                csvWriter.write(listing.getAddress().getStreet());
+//                csvWriter.write(listing.getAddress().getCity());
+//                csvWriter.write(listing.getAddress().getZip().toString());
+//                csvWriter.write(formatPrice(listing.getPrice()));
+//                csvWriter.write(formatPrice(RealEstateCalculator.calculateDownPayment(listing.getPrice())));
+//                double rent = listing.getZillowData().getRentZestimate();
+//                csvWriter.write(formatPrice(rent));
+//
+//                //
+//
+//                double management = RealEstateCalculator.calculateMonthlyManagementFees(listing.getZillowData().getRentZestimate());
+//                double tax = RealEstateCalculator.calculateMontylyTax(City.valueOf(listing.getAddress().getCity().toUpperCase()).getTaxRate(), listing.getPrice()) / 12;
+//                double insurance = City.valueOf(listing.getAddress().getCity().toUpperCase()).getHomeInsurance()  /12;
+//                double mortgage = RealEstateCalculator.calculateMonthlyPayment(listing.getPrice() - RealEstateCalculator.calculateDownPayment(listing.getPrice()));
+//                double wearTear = RealEstateCalculator.calculateMonthlWearTear(rent);
+//                double expense  = management+ tax + insurance + mortgage + wearTear;
+//                double cashFlow = rent - expense;
+//
+//                csvWriter.write(formatPrice(mortgage + tax + insurance));
+//                csvWriter.write(formatPrice(management));
+//                csvWriter.write(formatPrice(cashFlow));
+//                csvWriter.write(String.valueOf((cashFlow * 12d) / (RealEstateCalculator.calculateDownPayment(listing.getPrice()) + 2500d)));
+//                csvWriter.endRecord();
+//
+//            }
             csvWriter.close();
            return stringWriter.toString();
 
@@ -104,18 +100,5 @@ public class PropertyReportServiceImpl implements PropertyReportService {
 
     }
 
-    private double getMonthlyCashFlow(Listing listing) {
-
-        double rent = listing.getZillowData().getRentZestimate();
-        double management = RealEstateCalculator.calculateMonthlyManagementFees(listing.getZillowData().getRentZestimate());
-        double tax = RealEstateCalculator.calculateAnnualTax(City.CHARLOTTE.getTaxRate(), listing.getPrice()) / 12;
-        double insurance = City.CHARLOTTE.getHomeInsurance() /12;
-        double mortgage = RealEstateCalculator.calculateMonthlyPayment(listing.getPrice() - RealEstateCalculator.calculateDownPayment(listing.getPrice()));
-        double wearTear = RealEstateCalculator.calculateMonthlWearTear(rent);
-
-        double expense  = management+ tax + insurance + mortgage + wearTear;
-        return rent - expense;
-
-    }
 
 }

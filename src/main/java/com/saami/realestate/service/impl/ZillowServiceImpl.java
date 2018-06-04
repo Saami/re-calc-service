@@ -1,6 +1,7 @@
 package com.saami.realestate.service.impl;
 
 import com.saami.realestate.model.zillow.DeepCompsResponse;
+import com.saami.realestate.model.zillow.UpdatedDetailsResponse;
 import com.saami.realestate.model.zillow.ZestimateResonse;
 import com.saami.realestate.model.zillow.ZillowSearchResponse;
 import com.saami.realestate.service.api.ZillowService;
@@ -49,6 +50,9 @@ public class ZillowServiceImpl implements ZillowService {
 
     @Value("${api.zillow.comps.url}")
     String deepCompsUrl;
+
+    @Value("${api.zillow.updated.property.details.url}")
+    String updatedDetailsUrl;
 
     @Override
     public ZillowSearchResponse getZillowSearchData(String street, String city, String state) {
@@ -150,6 +154,60 @@ public class ZillowServiceImpl implements ZillowService {
             rd.close();
 
             return new ZestimateResonse(XML.toJSONObject(result.toString()));
+
+        } catch (Exception e) {
+            LOG.error("Error getting from Zillow zestimat api: " + urlWithParams, e);
+            return null;
+        } finally {
+            if (httpGet != null) {
+                httpGet.releaseConnection();
+            }
+        }
+    }
+
+    @Override
+    public UpdatedDetailsResponse getUpdatedDetails(String zpId) {
+        if (StringUtils.isEmpty(zpId)) {
+            throw new IllegalArgumentException("zpId is required for Zillow getUpdatedDetails api");
+        }
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put(ID_PARAM, id);
+        paramMap.put(ZP_ID, zpId);
+        final String urlWithParams = appendParams(updatedDetailsUrl, paramMap);
+        CloseableHttpClient httpClient = null;
+        HttpGet httpGet = null;
+        CloseableHttpResponse response = null;
+
+        try {
+
+            httpClient = HttpClientBuilder.create().build();
+            httpGet = new HttpGet(urlWithParams);
+            httpGet.addHeader("content-type", "application/xml");
+
+            LOG.debug("Hitting Zillow deepComps api: " + urlWithParams);
+            response = httpClient.execute(httpGet);
+
+            final int responseStatus = response.getStatusLine().getStatusCode();
+            if (responseStatus < 200 || responseStatus > 300) {
+                LOG.error("Request Code", responseStatus);
+                LOG.error("Request Message", response.getStatusLine());
+                throw new Exception(String.format("Call to Zillow get updated results api did not return 200. Status:[%s]", responseStatus));
+            }
+            LOG.debug("Zillow get updated results api call successful. Status Code: " + responseStatus);
+
+            BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(response.getEntity().getContent()));
+
+            StringBuffer result = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+
+            rd.close();
+
+            return new UpdatedDetailsResponse(XML.toJSONObject(result.toString()));
 
         } catch (Exception e) {
             LOG.error("Error getting from Zillow zestimat api: " + urlWithParams, e);

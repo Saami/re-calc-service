@@ -5,15 +5,14 @@ package com.saami.realestate.util;
  */
 public class RealEstateCalculator {
 
-    private static final double INTEREST_RATE = 5.75d;
+
     private static final int TERM_IN_YEARS = 30;
-    private static final double DOWN_PAYMENT_PERCENT = 20;
-    private static final double MANAGEMENT_FEE_PERCENT = 8;
-    private static final double WEAR_TEAR_FACTOR = 15;
 
-    public static double calculateMonthlyPayment(double loanAmount) {
 
-        double interestRate = INTEREST_RATE / 100.0;
+
+    public static double calculateMonthlyPayment(double loanAmount, double interestRateParam) {
+
+        double interestRate = interestRateParam / 100.0;
 
         double monthlyRate = interestRate / 12.0;
 
@@ -35,21 +34,22 @@ public class RealEstateCalculator {
         return monthlyPayment;
     }
 
-    public static double calculateAnnualTax(double taxRate, double homePrice) {
+    public static double calculateMontylyTax(double taxRate, double homePrice) {
         taxRate = taxRate / 100;
-        return homePrice * taxRate;
+        double annualTax = homePrice * taxRate;
+        return annualTax / 12;
     }
 
-    public static double calculateDownPayment(double homePrice) {
-        return homePrice * (DOWN_PAYMENT_PERCENT /100d);
+    public static double calculateDownPayment(double homePrice, double downPaymentPercent) {
+        return homePrice * (downPaymentPercent /100d);
     }
 
-    public static double calculateMonthlyManagementFees(double rent) {
-        return rent * (MANAGEMENT_FEE_PERCENT /100d);
+    public static double calculateMonthlyManagementFees(double rent, double managementFees) {
+        return rent * (managementFees /100d);
     }
 
-    public static double calculateMonthlWearTear(double rent) {
-        return rent * (WEAR_TEAR_FACTOR /100d);
+    public static double calculateMonthlyWearTear(double rent, double wearAndTearRate) {
+        return rent * (wearAndTearRate /100d);
     }
 
 }
